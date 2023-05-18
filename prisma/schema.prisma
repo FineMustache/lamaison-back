@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model usuario {
+  id Int @id @default(autoincrement())
+  nome String
+  email String
+  cpf String
+  senha String
+  rua String
+  numero String
+  complemento String?
+  bairro String
+  cep String
+  cidade String
+  estado String
+  telefone String?
+  compras compra[]
+  desejos desejo[]
+  verificado Boolean @default(false)
+}
+
+model categoria {
+  id Int @id @default(autoincrement())
+  nome String
+  produtos produto_categoria[]
+}
+
+model produto {
+  id Int @id @default(autoincrement())
+  nome String
+  valor Float
+  descricao String
+  imagem String
+  modelo String?
+  mtl String?
+  textura String?
+  superficie String?
+  desconto Float?
+  medidas String
+  categorias produto_categoria[]
+  compras compra_produto[]
+  desejos desejo[]
+}
+
+model produto_categoria {
+  id Int @id @default(autoincrement())
+  id_categoria Int
+  id_produto Int
+  produto produto @relation(fields: [id_produto], references: [id])
+  categoria categoria @relation(fields: [id_categoria], references: [id])
+}
+
+model compra {
+  id Int @id @default(autoincrement())
+  valor Float
+  data_compra DateTime @default(now())
+  data_entrega DateTime?
+  id_usuario Int
+  pago Boolean @default(false)
+  usuario usuario @relation(fields: [id_usuario], references: [id])
+  produtos compra_produto[]
+}
+
+model compra_produto {
+  id Int @id @default(autoincrement())
+  id_compra Int
+  id_produto Int
+  qtde Int @default(1)
+  compra compra @relation(fields: [id_compra], references: [id])
+  produto produto @relation(fields: [id_produto], references: [id])
+}
+
+model desejo {
+  id Int @id @default(autoincrement())
+  id_usuario Int
+  id_produto Int
+  usuario usuario @relation(fields: [id_usuario], references: [id])
+  produto produto @relation(fields: [id_produto], references: [id])
+}
