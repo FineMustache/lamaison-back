@@ -6,26 +6,28 @@ const Email = require('../controller/email')
 
 const create = async (req, res) => {
     const info = req.body
-
-    const compra = await prisma.compra.create({
-        data: info
-    })
-
     var valor = 0
-
     req.body.produtos.forEach(async p => {
-        await prisma.compra_produto.create({
-            data: {
-                id_compra: Number(compra.id),
-                id_produto: Number(p.id)
-            }
-        })
         valor += p.valor - (p.valor * p.desconto / 100)
     })
+    info.valor = parseFloat(valor.toFixed(2))
+    // const compra = await prisma.compra.create({
+    //     data: info
+    // })
 
-    const pix = new Pix(process.env.CHAVE_PIX, `Compra de ${req.body.produtos.length} produtos`, 'La Maison', 'Pedreira', crypto.randomBytes(32).toString('hex'), valor)
+    
 
-    res.status(200).json(pix).end()
+    // req.body.produtos.forEach(async p => {
+    //     await prisma.compra_produto.create({
+    //         data: {
+    //             id_compra: Number(compra.id),
+    //             id_produto: Number(p.id)
+    //         }
+    //     })
+    //     valor += p.valor - (p.valor * p.desconto / 100)
+    // })
+
+    res.status(200).json({...info, id: 90}).end()
 }
 
 const read = async (req, res) => {
